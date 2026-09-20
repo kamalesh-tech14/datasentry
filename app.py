@@ -26,7 +26,11 @@ def load_csv(file_bytes: bytes | None, path: str | None) -> pd.DataFrame:
     if file_bytes is not None:
         import io
         return pd.read_csv(io.BytesIO(file_bytes), low_memory=False)
-    return pd.read_csv(path)
+    if path and os.path.exists(path):
+        return pd.read_csv(path)
+    # The sample CSV is missing (e.g. it wasn't uploaded to GitHub): rebuild the identical dataset in memory.
+    from make_sample_data import make_sample
+    return make_sample()
 
 
 def style(fig: go.Figure, height: int = 320) -> go.Figure:
